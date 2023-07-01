@@ -1,6 +1,5 @@
 #!/bin/bash
 cd Worker
-nohup clamd &
+clamd &
 sleep 3
-nohup python3 app.py &
-/bin/bash
+python3 app.py 

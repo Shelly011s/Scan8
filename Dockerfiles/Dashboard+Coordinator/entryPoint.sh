@@ -8,18 +8,15 @@ then
 fi
 
 #Running Flask Web Server
-
 cd Dashboard
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
-nohup python3 app.py &
+export FLASK_APP=app.py 
+flask run --host=0.0.0.0 --port=5000 --debug &
 
-cd ..
+#Running Coordinator node 
+cd ../Coordinator
+python3 app.py &
 
-#Running Coordinator node
-
-cd Coordinator
-nohup python3 app.py &
-cd ..
-
-/bin/bash
+#Preventing the script from exiting
+while true; do sleep 1; done

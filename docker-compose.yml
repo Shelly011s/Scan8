@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./Dashboard/revamp_frontend
+      dockerfile: ../../Dockerfiles/frontend/Dockerfile
+    volumes:
+      - ./Dashboard/revamp_frontend:/app/frontend
+      - /app/frontend/node_modules
+    ports:
+      - 3000:3000
+    stdin_open: true
+    environment:
+      - REACT_APP_FLASK_URL=http://localhost:5000
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_USEPOLLING=true
+    depends_on:
+      - backend
+
+  backend:
+    build: 
+      context: .
+      dockerfile: ./Dockerfiles/Dashboard+Coordinator/Dockerfile
+    ports:
+      - 5000:5000 
+    volumes:
+      - scan8data:/app/common
+    environment:
+      - UPLOAD_DIRECTORY=../common/Uploads
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - UTILITIES_PATH=../Utilities
+      - REDIS_URL=redis://redis:6379
+      - RESULTS_PATH=../common/Results
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - worker
+      - mongodb
+      - redis
+
+  worker:
+    build: 
+      context: .
+      dockerfile: ./Dockerfiles/Worker/Dockerfile 
+    volumes:
+      - scan8data:/app/common
+    environment:
+      - UPLOAD_DIRECTORY=../common/Uploads
+      - MONGODB_HOST=mongo
+      - MONGODB_PORT=27017
+      - UTILITIES_PATH=../Utilities
+      - REDIS_URL=redis://redis:6379
+      - RESULTS_PATH=../common/Results
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo
+    ports: 
+      - 27017:27017
+    environment:
+        MONGO_INITDB_DATABASE: scan8
+    volumes:
+        - mongodbdata:/data
+
+  redis:
+    image: redis:4.0.6-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+        - ./redis:/redis
+
+volumes:
+    mongodbdata:
+        driver: local
+    scan8data:

@@ -15,7 +15,7 @@ RUN freshclam
 WORKDIR /app
 
 #copying script which will run python files and clamAV daemon
-COPY entryPoint.sh /app/
+COPY ./Dockerfiles/Worker/entryPoint.sh /app/
 
 #copying required modules and files into the container
 COPY ./Worker /app/Worker
@@ -23,9 +23,7 @@ COPY ./Worker /app/Worker
 COPY ./Utilities /app/Utilities
 
 COPY .env /app/
-
 #installing Modules
 RUN pip3 install -r Worker/requirements.txt
-
 
 ENTRYPOINT [ "/app/entryPoint.sh" ]

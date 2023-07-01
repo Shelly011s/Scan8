@@ -7,8 +7,7 @@ RUN apt-get update -y && \
 #working directory
 WORKDIR /app
 
-COPY entryPoint.sh /app/
-
+COPY ./Dockerfiles/Dashboard+Coordinator/entryPoint.sh /app/
 #copying required modules and files
 COPY ./Dashboard /app/Dashboard
 
@@ -21,4 +20,5 @@ COPY .env /app/
 #installing required modules
 RUN pip3 install -r Dashboard/requirements.txt -r Coordinator/requirements.txt 
 
+EXPOSE 5000
 ENTRYPOINT ["/app/entryPoint.sh"]
